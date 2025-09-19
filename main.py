@@ -32,11 +32,29 @@ async def delete_account(id: str):
 # transactions
 @app.post("/account/{id}/deposit")
 async def make_deposit(amount: int, account_id: str):
-    return { "message": f"making deposit of ${amount}" }
+    account = db.get_account(account_id)
+    account_obj = models.Account(
+        account["name"],
+        account["balance"],
+        account["account_ID"]
+    )
+    tx = account_obj.deposit(amount)
+    db.update_account(account_obj.account_ID, "BALANCE", account_obj.balance)
+    db.insert_transaction(tx)
+    return account
 
 @app.post("/accounts/{id}/withdraw")
-async def make_withdrawal(amount: int):
-    return {"message": f"making withdrawal of ${amount}"}
+async def make_withdrawal(amount: int, account_id: str):
+    account = db.get_account(account_id)
+    account_obj = models.Account(
+        account["name"],
+        account["balance"],
+        account["account_ID"]
+    )
+    tx = account_obj.withdraw(amount)
+    db.update_account(account_obj.account_ID, "BALANCE", account_obj.balance)
+    db.insert_transaction(tx)
+    return account
 
 @app.post("/accounts/{id}/transfer")
 async def make_transfer(amount: int, target_account: str):

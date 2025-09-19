@@ -1,8 +1,15 @@
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, Boolean, DateTime
 import hashlib
+from enum import Enum
+
 engine = create_engine('sqlite:///mydatabase.sqlite', echo=True)
 
 meta = MetaData()
+
+class UpdateType(Enum):
+    BALANCE="BALANCE"
+    POLICY="POLICY"
+    NAME="NAME"
 
 accounts = Table(
     "accounts",
@@ -63,16 +70,44 @@ def get_account(account_ID):
         result = conn.execute(select_statement).first()
         return dict(result._mapping) if result else None
 
+def update_account(account_ID, update_type, value):
+    update_statment = ""
+    if (update_type == UpdateType.BALANCE.value):
+        update_statment = accounts.update().where(
+            accounts.c.account_ID == account_ID
+        ).values(
+            balance = value
+        )
+    elif (update_type == UpdateType.POLICY.value):
+        update_statment = accounts.update().where(
+            accounts.c.account_ID == account_ID
+        ).values(
+            policy_ID = value
+        )
+    elif (update_type == UpdateType.NAME.value):
+        update_statment = accounts.update().where(
+            accounts.c.account_ID == account_ID
+        ).values(
+            name = value
+        )
+    else: return {
+        "Error": "update failed"
+    }
+    
+    with engine.begin() as conn:
+        conn.execute(update_statment)
+    return {}
+
 def insert_transaction(tx_obj):
     # insert transaction into global ledger
     insert_statement = ledger.insert().values(
         amount=tx_obj.amount,
         current_balance=tx_obj.current_balance,
-        tx_type=tx_obj.tx_type,
-        account_ID=tx_obj.user_id,
+        tx_type=tx_obj.tx_type.value,
+        account_ID=str(tx_obj.user_id),
         timestamp=tx_obj.timestamp,
-        tx_ID=tx_obj.tx_ID,
-        status=tx_obj.status
+        tx_ID=str(tx_obj.tx_ID),
+        status=tx_obj.status.value
     )
     with engine.begin() as conn:
         result = conn.execute(insert_statement)

@@ -124,6 +124,7 @@ class Account:
         tx.status = status
         # add transaction to account ledger
         self.ledger.add_transaction(tx)
+        return tx
     
     # deposit money into account
     def deposit(self, amount):
@@ -145,3 +146,4 @@ class Account:
         tx.status = status
         # add transaction to account ledger
         self.ledger.add_transaction(tx)
+        return tx

@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, Boolean, DateTime
 import hashlib
-engine = create_engine('sqlite:///mydatabase.cb', echo=True)
+engine = create_engine('sqlite:///mydatabase.sqlite', echo=True)
 
 meta = MetaData()
 
@@ -41,8 +41,8 @@ meta.create_all(engine)
 # helpers
 def insert_account(account_obj):
     # insert account
-    insert_statement = account.insert().values(
-        account_ID=account_obj.account_ID,
+    insert_statement = accounts.insert().values(
+        account_ID=str(account_obj.account_ID),
         name=account_obj.name,
         balance=account_obj.balance,
         policy_ID="default_policy"
@@ -50,6 +50,18 @@ def insert_account(account_obj):
     with engine.begin() as conn:
         result = conn.execute(insert_statement)
         return result
+
+def delete_account(account_ID):
+    delete_statement = accounts.delete().where(accounts.c.account_ID == account_ID)
+    with engine.begin() as conn:
+        result = conn.execute(delete_statement)
+        return result
+
+def get_account(account_ID):
+    select_statement = accounts.select().where(accounts.c.account_ID == account_ID)
+    with engine.begin() as conn:
+        result = conn.execute(select_statement).first()
+        return dict(result._mapping) if result else None
 
 def insert_transaction(tx_obj):
     # insert transaction into global ledger
@@ -87,3 +99,5 @@ def insert_policy(policy_obj):
                     overdraft_limit=policy_obj.overdraft_limit
                 )
             )
+    return
+

@@ -145,17 +145,3 @@ class Account:
         tx.status = status
         # add transaction to account ledger
         self.ledger.add_transaction(tx)
-
-ex = Account("John", 150, 0)
-
-
-ex.withdraw(100)
-ex.deposit(150)
-ex.deposit(1000000000)
-ex.withdraw(1000000000)
-ex.withdraw(10)
-ex.deposit(5)
-ex.deposit(-1)
-
-# after transactions
-ex.ledger.print_ledger()

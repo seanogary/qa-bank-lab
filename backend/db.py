@@ -40,7 +40,8 @@ ledger = Table(
     Column('account_ID', String),
     Column('timestamp', DateTime),
     Column('tx_ID', String),
-    Column('status', String)
+    Column('status', String),
+    Column('counterparty', String)
 )
 
 meta.create_all(engine)

@@ -57,8 +57,31 @@ async def make_withdrawal(amount: int, account_id: str):
     return account
 
 @app.post("/accounts/{id}/transfer")
-async def make_transfer(amount: int, target_account: str):
-    return {"message": f"transfering ${amount} to account with id ${target_account}"}
+async def make_transfer(amount: int, target_account_id: str, from_account_id: str):
+    to_account = db.get_account(target_account_id)
+    from_account = db.get_account(from_account_id)
+    to_account_obj = models.Account(
+        to_account["name"],
+        to_account["balance"],
+        to_account["account_ID"]
+    )
+    from_account_obj = models.Account(
+        from_account["name"],
+        from_account["balance"],
+        from_account["account_ID"]
+    )
+    payer_tx, payee_tx = from_account_obj.payment(
+        to_account_obj, 
+        amount
+    )
+
+    db.update_account(to_account_obj.account_ID, "BALANCE", to_account_obj.balance)
+    db.update_account(from_account_obj.account_ID, "BALANCE", from_account_obj.balance)
+
+    return {
+        **from_account,
+        **to_account
+    }
 
 # ledger operations
 @app.post("/accounts/{id}/ledger")

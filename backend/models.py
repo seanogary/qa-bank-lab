@@ -10,6 +10,7 @@ class TransactionType(Enum):
     DEPOSIT = "DEPOSIT"
     WITHDRAWAL = "WITHDRAWAL"
     TRANSFER = "TRANSFER"
+    PAY = "PAY"
 
 class StatusType(Enum):
     PROCESSING = "PROCESSING"
@@ -85,14 +86,15 @@ class Ledger:
         print(tabulate(table, headers = column_names))
 
 class Transaction:
-    def __init__(self, user_id, amount, tx_type, current_balance, timestamp, tx_ID=None):
+    def __init__(self, user_id, amount, tx_type, current_balance, timestamp, tx_ID=None, counterparty=None):
         self.tx_ID = tx_ID or uuid.uuid4()
         self.user_id = user_id
         self.amount = amount
         self.tx_type = tx_type
         self.timestamp = timestamp
         self.current_balance = current_balance
-        self.status = StatusType.PROCESSING 
+        self.status = StatusType.PROCESSING
+        counterparty=counterparty
 
 class Account:
     def __init__(self, name, balance, account_ID=None):
@@ -147,3 +149,42 @@ class Account:
         # add transaction to account ledger
         self.ledger.add_transaction(tx)
         return tx
+ 
+    def payment(self, account_obj, amount):
+        # initial balances
+        self_balance = self.balance
+        target_balance = account_obj.balance
+
+        # check policy to validate transaction
+        if (self.policy.validate_withdrawal(amount, self.balance)):
+            if (account_obj.policy.validate_deposit(amount)):
+                self_balance = self.balance - amount
+                target_balance = account_obj.balance + amount
+                status = StatusType.SUCCESS
+        else:
+            status = StatusType.DECLINED
+        
+        transaction_time = datetime.utcnow()
+
+        payer_tx = Transaction(
+            user_id=self.account_ID,
+            amount=amount,
+            tx_type=TransactionType.PAY,
+            current_balance=self_balance,
+            timestamp=transaction_time,
+            counterparty=account_obj.account_ID
+        )
+
+        payee_tx = Transaction(
+            user_id=account_obj.account_ID,
+            amount=amount,
+            tx_type=TransactionType.PAY,
+            current_balance=target_balance,
+            timestamp=transaction_time,
+            counterparty=self.account_ID
+        )
+
+        self.balance = self_balance
+        account_obj.balance = target_balance
+
+        return [payer_tx, payee_tx]

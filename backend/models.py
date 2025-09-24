@@ -184,6 +184,9 @@ class Account:
             counterparty=self.account_ID
         )
 
+        payer_tx.status = status
+        payee_tx.status = status
+
         self.balance = self_balance
         account_obj.balance = target_balance
 

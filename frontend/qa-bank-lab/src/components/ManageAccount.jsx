@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { Box, VStack, Text, HStack, Button, Input, Heading, Textarea, Badge } from "@chakra-ui/react"
+import { api } from "../services/api"
 
 function ManageAccount() {
   // Form states

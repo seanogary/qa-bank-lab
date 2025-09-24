@@ -1,12 +1,16 @@
 import { useState } from "react"
 import { Box, Text, VStack, HStack, Button } from "@chakra-ui/react"
 import TransactionsModal from "./TransactionsModal"
+import { api } from "../services/api"
 
 function Dashboard({ account, transactions, allTransactions }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const openModal = () => setIsModalOpen(true)
   const closeModal = () => setIsModalOpen(false)
+
+  // Handle empty transactions state
+  const hasTransactions = transactions && transactions.length > 0
 
   return (
     <>
@@ -42,7 +46,12 @@ function Dashboard({ account, transactions, allTransactions }) {
             </Button>
           </HStack>
           <VStack spacing={3} align="stretch">
-            {transactions.map((tx) => (
+            {!hasTransactions ? (
+              <Box p={6} textAlign="center" bg="gray.50" borderRadius="md">
+                <Text color="gray.500">No transactions yet</Text>
+              </Box>
+            ) : (
+              transactions.map((tx) => (
               <Box key={tx.tx_ID} p={3} bg="gray.50" borderRadius="md">
                 <HStack justify="space-between">
                   <VStack align="start" spacing={1}>
@@ -66,7 +75,8 @@ function Dashboard({ account, transactions, allTransactions }) {
                   </VStack>
                 </HStack>
               </Box>
-            ))}
+            ))
+            )}
           </VStack>
         </Box>
       </VStack>

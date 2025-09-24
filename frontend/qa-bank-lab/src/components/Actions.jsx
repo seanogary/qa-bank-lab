@@ -1,7 +1,10 @@
 import { useState } from "react"
-import { Box, VStack, Text, HStack, Button, Input, Heading } from "@chakra-ui/react"
+import { Box, VStack, HStack, Text, Button, Input, Heading, Spinner } from "@chakra-ui/react"
+import { api } from "../services/api"
 
-function Actions() {
+function Actions({ account, onTransactionSuccess }) {
+  const [notification, setNotification] = useState(null)
+  const [notificationType, setNotificationType] = useState(null)
   // Form states
   const [depositAmount, setDepositAmount] = useState('')
   const [withdrawAmount, setWithdrawAmount] = useState('')
@@ -18,12 +21,28 @@ function Actions() {
     
     setDepositLoading(true)
     try {
-      // TODO: Replace with actual API call
-      console.log('Depositing:', depositAmount)
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      const result = await api.deposit(account.account_ID, parseInt(depositAmount))
       setDepositAmount('')
-      alert(`Successfully deposited $${depositAmount}!`)
+      
+      // Check transaction status
+      const transactionStatus = result.transaction.status.toLowerCase()
+      
+      if (transactionStatus === 'success') {
+        // Refresh account data after successful deposit
+        await onTransactionSuccess()
+        // Show success notification
+        setNotification(`Successfully deposited $${depositAmount}`)
+        setNotificationType('success')
+      } else {
+        // Show declined notification
+        setNotification(`Deposit declined: ${transactionStatus}`)
+        setNotificationType('declined')
+      }
+      
+      setTimeout(() => {
+        setNotification(null)
+        setNotificationType(null)
+      }, 3000)
     } catch (error) {
       console.error('Deposit failed:', error)
       alert('Deposit failed. Please try again.')
@@ -37,12 +56,28 @@ function Actions() {
     
     setWithdrawLoading(true)
     try {
-      // TODO: Replace with actual API call
-      console.log('Withdrawing:', withdrawAmount)
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      const result = await api.withdraw(account.account_ID, parseInt(withdrawAmount))
       setWithdrawAmount('')
-      alert(`Successfully withdrew $${withdrawAmount}!`)
+      
+      // Check transaction status
+      const transactionStatus = result.transaction.status.toLowerCase()
+      
+      if (transactionStatus === 'success') {
+        // Refresh account data after successful withdrawal
+        await onTransactionSuccess()
+        // Show success notification
+        setNotification(`Successfully withdrew $${withdrawAmount}`)
+        setNotificationType('success')
+      } else {
+        // Show declined notification
+        setNotification(`Withdrawal declined: ${transactionStatus}`)
+        setNotificationType('declined')
+      }
+      
+      setTimeout(() => {
+        setNotification(null)
+        setNotificationType(null)
+      }, 3000)
     } catch (error) {
       console.error('Withdrawal failed:', error)
       alert('Withdrawal failed. Please try again.')
@@ -73,6 +108,37 @@ function Actions() {
 
   return (
     <VStack spacing={6} align="stretch">
+      {/* Transaction Notification - Floating */}
+      {notification && (
+        <Box
+          position="fixed"
+          bottom={4}
+          left="50%"
+          transform="translateX(-50%)"
+          zIndex={1000}
+          p={4}
+          bg={notificationType === 'success' ? 'green.50' : 'red.50'}
+          border="1px"
+          borderColor={notificationType === 'success' ? 'green.200' : 'red.200'}
+          borderRadius="md"
+          color={notificationType === 'success' ? 'green.800' : 'red.800'}
+          boxShadow="lg"
+          minWidth="300px"
+          maxWidth="400px"
+        >
+          <HStack align="start">
+            <Text fontSize="xl" mr={2}>
+              {notificationType === 'success' ? '✓' : '✗'}
+            </Text>
+            <VStack align="start" spacing={1}>
+              <Text fontWeight="bold">
+                {notificationType === 'success' ? 'Transaction Successful!' : 'Transaction Declined'}
+              </Text>
+              <Text fontSize="sm">{notification}</Text>
+            </VStack>
+          </HStack>
+        </Box>
+      )}
       {/* Deposit Form */}
       <Box p={6} bg="white" borderRadius="md" shadow="sm" border="1px" borderColor="gray.200">
         <VStack spacing={4} align="stretch">

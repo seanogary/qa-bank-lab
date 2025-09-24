@@ -71,6 +71,12 @@ def get_account(account_ID):
         result = conn.execute(select_statement).first()
         return dict(result._mapping) if result else None
 
+def get_all_accounts():
+    select_statement = accounts.select()
+    with engine.connect() as conn:
+        result = conn.execute(select_statement)
+        return [dict(row._mapping) for row in result]
+
 def update_account(account_ID, update_type, value):
     update_statment = ""
     if (update_type == UpdateType.BALANCE.value):
@@ -137,3 +143,8 @@ def insert_policy(policy_obj):
             )
     return
 
+def get_ledger(account_ID):
+    select_statement = ledger.select().where(ledger.c.account_ID == account_ID)
+    with engine.connect() as conn:
+        result = conn.execute(select_statement)
+        return result.mappings().all()

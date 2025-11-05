@@ -65,8 +65,32 @@ function Login({ onLogin }) {
             <Text fontSize="lg" color="gray.600">Select an account to continue</Text>
           </VStack>
 
+          {/* ADMIN BUTTON - SEPARATE FROM ACCOUNTS */}
+          <Button
+            w="100%"
+            maxW="md"
+            h="80px"
+            bg="red.600"
+            color="white"
+            fontSize="2xl"
+            fontWeight="bold"
+            borderRadius="lg"
+            _hover={{ bg: "red.700" }}
+            onClick={() => window.location.href = '/admin.html'}
+          >
+            🔧 ADMIN DASHBOARD 🔧
+          </Button>
+
+          {/* Divider */}
+          <HStack w="100%" maxW="md" spacing={4}>
+            <Box h="1px" bg="gray.300" flex="1" />
+            <Text fontSize="sm" color="gray.500" px={2}>OR</Text>
+            <Box h="1px" bg="gray.300" flex="1" />
+          </HStack>
+
           {/* Account List */}
           <VStack spacing={4} w="100%" maxW="md">
+            <Text fontSize="lg" fontWeight="semibold" color="gray.700">Select Your Account</Text>
             {accounts.length === 0 ? (
               <Text color="gray.500">No accounts found</Text>
             ) : (
@@ -79,7 +103,10 @@ function Login({ onLogin }) {
                   variant="outline"
                   borderColor="gray.300"
                   borderRadius="md"
-                  _hover={{ bg: "blue.50", borderColor: "blue.300" }}
+                  _hover={{ 
+                    bg: "blue.50", 
+                    borderColor: "blue.300" 
+                  }}
                   onClick={() => handleAccountSelect(account)}
                 >
                   <VStack spacing={2} align="start" w="100%">

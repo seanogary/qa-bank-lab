@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8000'
+const API_BASE_URL = 'http://localhost:8000';
 
 const api = {
   async createAccount(name, initialDeposit) {
@@ -46,13 +46,13 @@ const api = {
     return data;
   },
 
-  async sendSnail(fromAccountId, toAccountId, amount) {
+  async sendSnail(fromUsername, toUsername, amount) {
     const res = await fetch(`${API_BASE_URL}/accounts/transfer`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
-        from_account_id: fromAccountId, 
-        to_account_id: toAccountId, 
+        from_username: fromUsername, 
+        target_username: toUsername, 
         amount: amount 
       })
     });
@@ -70,7 +70,23 @@ const api = {
     const res = await fetch(`${API_BASE_URL}/accounts`);
     const data = await res.json();
     return data;
+  },
+
+  async createPolicyRequest(policyData) {
+    // Extract the nested policy_request object and user_id
+    // This handles both formats: direct fields or nested structure
+    const requestBody = policyData.policy_request ? 
+      { ...policyData.policy_request, user_id: policyData.user_id } : 
+      policyData;
+    
+    const res = await fetch(`${API_BASE_URL}/policy-requests`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody)
+    });
+    const data = await res.json();
+    return data;
   }
 }
 
-export { api } 
+export { api }

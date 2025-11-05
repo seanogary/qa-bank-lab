@@ -1,4 +1,7 @@
 # Database files
+
+# Auxiliary scripts
+populate_user_accounts.py
 *.sqlite
 *.db
 *.mysql
@@ -45,6 +48,9 @@ yarn-error.log*
 # IDE
 .vscode/
 .idea/
+# Ignore all markdown files except README.md
+*.md
+!README.md
 *.swp
 *.swo
 *~

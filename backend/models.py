@@ -2,7 +2,7 @@
 # connect to ledger database, user database
 # create log system for transactions, 
 from enum import Enum
-from tabulate import tabulate
+# from tabulate import tabulate
 import uuid
 from datetime import datetime
 
@@ -16,7 +16,12 @@ class StatusType(Enum):
     PROCESSING = "PROCESSING"
     SUCCESS = "SUCCESS"
     FAILURE = "FAILURE"
-    DECLINED = "DECLINED"   
+    DECLINED = "DECLINED"
+
+class PolicyRequestStatus(Enum):
+    PENDING = "PENDING"
+    APPROVED = "APPROVED"
+    DENIED = "DENIED"   
 
 class Policy:
     def __init__(
@@ -59,31 +64,34 @@ class Ledger:
 
     # add transaction to ledger
     def add_transaction(self, tx):
-        self.transactions.append(tx)
+        if (isinstance(tx, list)):
+            self.transactions.extend(tx)
+        else:
+            self.transactions.append(tx)
     
     # print ledger with tabulate
-    def print_ledger(self):
-        column_names = [
-            "AMOUNT", 
-            "BALANCE",
-            "TRANSACTION TYPE", 
-            "USER",
-            "TIME",
-            "TRANSACTION ID",
-            "STATUS",
-            ]
-        table = []
-        for transaction in self.transactions:
-            table.append([
-                transaction.amount, 
-                transaction.current_balance,
-                transaction.tx_type.value, 
-                transaction.user_id,
-                transaction.timestamp,
-                transaction.tx_ID,
-                transaction.status.value, 
-            ])
-        print(tabulate(table, headers = column_names))
+    # def print_ledger(self):
+    #     column_names = [
+    #         "AMOUNT", 
+    #         "BALANCE",
+    #         "TRANSACTION TYPE", 
+    #         "USER",
+    #         "TIME",
+    #         "TRANSACTION ID",
+    #         "STATUS",
+    #         ]
+    #     table = []
+    #     for transaction in self.transactions:
+    #         table.append([
+    #             transaction.amount, 
+    #             transaction.current_balance,
+    #             transaction.tx_type.value, 
+    #             transaction.user_id,
+    #             transaction.timestamp,
+    #             transaction.tx_ID,
+    #             transaction.status.value, 
+    #         ])
+    #     print(tabulate(table, headers = column_names))
 
 class Transaction:
     def __init__(self, user_id, amount, tx_type, current_balance, timestamp, tx_ID=None, counterparty=None):
@@ -191,3 +199,26 @@ class Account:
         account_obj.balance = target_balance
 
         return [payer_tx, payee_tx]
+
+class PolicyRequest:
+    def __init__(self, user_id, policy_request, request_id=None, status=PolicyRequestStatus.PENDING, created_at=None, updated_at=None):
+        self.request_id = request_id or uuid.uuid4()
+        self.user_id = user_id
+        self.status = status
+        self.policy_request = policy_request
+        self.created_at = created_at
+        self.updated_at = updated_at
+    
+    def update_status(self, new_status):
+        self.status = new_status
+    
+    def to_dict(self):
+        return {
+            'request_id': str(self.request_id),
+            'user_id': str(self.user_id),
+            'status': self.status.value,
+            'policy_request': self.policy_request,
+            'created_at': self.created_at,
+            'updated_at': self.updated_at
+        }
+

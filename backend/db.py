@@ -1,6 +1,7 @@
-from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, Boolean, DateTime
+from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, Boolean, DateTime, JSON
 import hashlib
 from enum import Enum
+from datetime import datetime
 
 engine = create_engine('sqlite:///mydatabase.sqlite', echo=True)
 
@@ -42,6 +43,24 @@ ledger = Table(
     Column('tx_ID', String),
     Column('status', String),
     Column('counterparty', String)
+)
+
+policy_requests = Table(
+    "policy_requests",
+    meta,
+    Column('request_id', String, primary_key=True, nullable=False),
+    Column('user_id', String, nullable=False),
+    Column('status', String, nullable=False),
+    Column('policy_request', JSON, nullable=False),
+    Column('created_at', DateTime, nullable=False),
+    Column('updated_at', DateTime, nullable=False)
+)
+
+user_accounts = Table(
+    "user_accounts",
+    meta,
+    Column('username', String, primary_key=True, nullable=False),
+    Column('account_ID', String, nullable=False)
 )
 
 meta.create_all(engine)
@@ -148,3 +167,73 @@ def get_ledger(account_ID):
     with engine.connect() as conn:
         result = conn.execute(select_statement)
         return result.mappings().all()
+
+def insert_policy_request(policy_request_obj):
+    with engine.begin() as conn:
+        return conn.execute(
+            policy_requests.insert().values(
+                request_id=str(policy_request_obj.request_id),
+                user_id=str(policy_request_obj.user_id),
+                status=policy_request_obj.status.value,
+                policy_request=policy_request_obj.policy_request,
+                created_at=policy_request_obj.created_at,
+                updated_at=policy_request_obj.updated_at
+            )
+        )
+
+def get_policy_requests(user_id=None):
+    with engine.connect() as conn:
+        if user_id:
+            select_statement = policy_requests.select().where(policy_requests.c.user_id == user_id)
+        else:
+            select_statement = policy_requests.select()
+        result = conn.execute(select_statement)
+        return result.mappings().all()
+
+def update_policy_request_status(request_id, new_status):
+    with engine.begin() as conn:
+        update_statement = policy_requests.update().where(
+            policy_requests.c.request_id == request_id
+        ).values(
+            status=new_status,
+            updated_at=datetime.now()
+        )
+        return conn.execute(update_statement)
+
+def get_account_id_by_username(username):
+    """Get account ID by username from user_accounts table"""
+    from sqlalchemy import select
+    select_statement = select(user_accounts.c.account_ID).where(user_accounts.c.username == username)
+    with engine.connect() as conn:
+        result = conn.execute(select_statement).first()
+        return result[0] if result else None
+
+def get_username_by_account_id(account_id):
+    """Get username by account ID from user_accounts table"""
+    from sqlalchemy import select
+    select_statement = select(user_accounts.c.username).where(user_accounts.c.account_ID == account_id)
+    with engine.connect() as conn:
+        result = conn.execute(select_statement).first()
+        return result[0] if result else None
+
+def insert_user_account(username, account_id):
+    """Insert a new username to account ID mapping"""
+    insert_statement = user_accounts.insert().values(
+        username=username,
+        account_ID=account_id
+    )
+    with engine.begin() as conn:
+        result = conn.execute(insert_statement)
+
+def search_usernames(search_term):
+    """Search for usernames that match the search term (partial matching)"""
+    from sqlalchemy import select
+    # Use LIKE for partial matching, search for usernames containing the search term
+    select_statement = select(user_accounts.c.username).where(
+        user_accounts.c.username.ilike(f'%{search_term}%')
+    ).limit(10)  # Limit results to prevent too many matches
+    
+    with engine.connect() as conn:
+        result = conn.execute(select_statement).fetchall()
+        # Return list of usernames
+        return [row[0] for row in result] if result else []

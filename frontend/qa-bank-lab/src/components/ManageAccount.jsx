@@ -1,242 +1,225 @@
-import { useState } from "react"
-import { Box, VStack, Text, HStack, Button, Input, Heading, Textarea, Badge } from "@chakra-ui/react"
-import { api } from "../services/api"
+import React, { useState } from 'react'
+import { Box, VStack, HStack, Text, Button, Heading, Textarea } from "@chakra-ui/react"
+import { api } from '../services/api.js'
+
+function HundredDollarInput({ value, onChange, placeholder, name, min = 0, max = 50000 }) {
+  const predefinedValues = [
+    100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000
+  ].filter(val => val >= min && val <= max)
+
+  const handleChange = (e) => {
+    onChange(e)  // Pass the original event directly to ensure proper state update
+  }
+
+  return (
+    <select
+      value={value}
+      onChange={handleChange}
+      name={name}
+      style={{
+        width: '100%',
+        padding: '12px 16px',
+        backgroundColor: 'rgba(255,255,255,0.06)',
+        border: '1px solid rgba(255,255,255,0.08)',
+        borderRadius: '8px',
+        color: 'white',
+        fontSize: '16px',
+        fontFamily: 'Inter, system-ui, sans-serif',
+        cursor: 'pointer'
+      }}
+      onFocus={(e) => {
+        e.target.style.borderColor = 'rgba(56,189,248,0.4)';
+        e.target.style.boxShadow = '0 0 0 1px rgba(56,189,248,0.4)';
+      }}
+      onBlur={(e) => {
+        e.target.style.borderColor = 'rgba(255,255,255,0.08)';
+        e.target.style.boxShadow = 'none';
+      }}
+    >
+      <option value="" style={{ background: 'rgba(11,11,11,0.92)', color: 'white' }}>
+        Select amount...
+      </option>
+      {predefinedValues.map((amount) => (
+        <option key={amount} value={amount} style={{ background: 'rgba(11,11,11,0.92)', color: 'white' }}>
+          ${amount.toLocaleString()}
+        </option>
+      ))}
+    </select>
+  )
+}
 
 function ManageAccount() {
-  // Form states
-  const [customRequest, setCustomRequest] = useState('')
-  const [justification, setJustification] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [formData, setFormData] = useState({
+    maxDeposit: '',
+    maxWithdrawal: '',
+    dailyWithdrawalLimit: '',
+    overdraftLimit: '',
+    justification: ''
+  })
+  
 
-  // Mock current policy (would come from API)
-  const currentPolicy = {
-    maxDeposit: 1000,
-    maxWithdrawal: 1000,
-    dailyWithdrawalLimit: 10000,
-    allowNegativeBalance: true,
-    overdraftLimit: 50
-  }
-
-  // Mock request history (would come from API)
-  const requestHistory = [
-    { id: 1, request: "Increase daily withdrawal to $15,000", status: "Approved", date: "2024-01-15" },
-    { id: 2, request: "Enable overdraft protection up to $500", status: "Pending", date: "2024-01-20" },
-    { id: 3, request: "Increase max deposit to $5,000", status: "Denied", date: "2024-01-10" }
-  ]
-
-  const handleQuickRequest = async (requestType) => {
-    setIsSubmitting(true)
-    try {
-      // TODO: Replace with actual API call
-      console.log('Quick policy request:', requestType)
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      alert(`Policy request submitted: ${requestType}`)
-    } catch (error) {
-      console.error('Request failed:', error)
-      alert('Request failed. Please try again.')
-    } finally {
-      setIsSubmitting(false)
+  const validateHundredDollarAmount = (value, fieldName) => {
+    if (value && value.trim()) {
+      const numValue = parseInt(value)
+      if (isNaN(numValue) || numValue % 100 !== 0) {
+        alert(`${fieldName} must be in multiples of $100`)
+        return false
+      }
     }
+    return true
   }
 
-  const handleCustomRequest = async () => {
-    if (!customRequest.trim()) return
+  const handleSubmit = async (e) => {
+    e.preventDefault()
     
-    setIsSubmitting(true)
+    if (!formData.justification.trim()) {
+      alert('Please provide a justification')
+      return
+    }
+    
+    // Validate all monetary amounts are multiples of $100
+    if (!validateHundredDollarAmount(formData.maxDeposit, 'Maximum Deposit')) return
+    if (!validateHundredDollarAmount(formData.maxWithdrawal, 'Maximum Withdrawal')) return
+    if (!validateHundredDollarAmount(formData.dailyWithdrawalLimit, 'Daily Withdrawal Limit')) return
+    if (!validateHundredDollarAmount(formData.overdraftLimit, 'Overdraft Limit')) return
+    
+    // Create policy request object
+    const policyRequestData = {
+      user_id: 'current-user-id', // In a real app, this would come from auth context
+      policy_request: {
+        max_deposit: formData.maxDeposit ? parseInt(formData.maxDeposit) : null,
+        max_withdrawal: formData.maxWithdrawal ? parseInt(formData.maxWithdrawal) : null,
+        daily_withdrawal_limit: formData.dailyWithdrawalLimit ? parseInt(formData.dailyWithdrawalLimit) : null,
+        overdraft_limit: formData.overdraftLimit ? parseInt(formData.overdraftLimit) : null,
+        justification: formData.justification
+      }
+    }
+    
     try {
-      // TODO: Replace with actual API call
-      console.log('Custom policy request:', customRequest, 'Justification:', justification)
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      setCustomRequest('')
-      setJustification('')
-      alert('Custom policy request submitted successfully!')
+      const response = await api.createPolicyRequest(policyRequestData)
+      console.log('Policy request submitted successfully:', response)
+      alert('Request submitted successfully!')
+      setFormData({
+        maxDeposit: '',
+        maxWithdrawal: '',
+        dailyWithdrawalLimit: '',
+        overdraftLimit: '',
+        justification: ''
+      })
     } catch (error) {
-      console.error('Request failed:', error)
-      alert('Request failed. Please try again.')
-    } finally {
-      setIsSubmitting(false)
+      console.error('Failed to submit policy request:', error)
+      alert('Failed to submit request')
     }
   }
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'Approved': return 'green'
-      case 'Pending': return 'yellow'
-      case 'Denied': return 'red'
-      default: return 'gray'
-    }
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    })
   }
 
   return (
     <VStack spacing={6} align="stretch">
-      {/* Current Policy Display */}
-      <Box p={6} bg="white" borderRadius="md" shadow="sm" border="1px" borderColor="gray.200">
+      {/* Policy Request Form */}
+      <Box p={6} bg="rgba(16,16,16,0.62)" borderRadius="xl" boxShadow="0 18px 32px rgba(0,0,0,0.35)" border="1px solid rgba(255,255,255,0.08)" backdropFilter="blur(8px)">
         <VStack spacing={4} align="stretch">
           <HStack>
             <Box w={8} h={8} bg="blue.500" borderRadius="md" display="flex" alignItems="center" justifyContent="center">
               <Text color="white" fontWeight="bold">📋</Text>
             </Box>
-            <Heading size="md" color="gray.800">Current Account Policy</Heading>
+            <Heading size="md" color="white" className="brand-type">Policy Request Form</Heading>
           </HStack>
-          
-          <VStack spacing={3} align="stretch">
-            <HStack justify="space-between">
-              <Text fontWeight="medium">Max Deposit:</Text>
-              <Text fontFamily="mono">${currentPolicy.maxDeposit.toLocaleString()}</Text>
-            </HStack>
-            <HStack justify="space-between">
-              <Text fontWeight="medium">Max Withdrawal:</Text>
-              <Text fontFamily="mono">${currentPolicy.maxWithdrawal.toLocaleString()}</Text>
-            </HStack>
-            <HStack justify="space-between">
-              <Text fontWeight="medium">Daily Withdrawal Limit:</Text>
-              <Text fontFamily="mono">${currentPolicy.dailyWithdrawalLimit.toLocaleString()}</Text>
-            </HStack>
-            <HStack justify="space-between">
-              <Text fontWeight="medium">Overdraft Protection:</Text>
-              <Text fontFamily="mono">
-                {currentPolicy.allowNegativeBalance ? `Up to $${currentPolicy.overdraftLimit}` : 'Disabled'}
-              </Text>
-            </HStack>
-          </VStack>
-        </VStack>
-      </Box>
 
-      {/* Quick Policy Requests */}
-      <Box p={6} bg="white" borderRadius="md" shadow="sm" border="1px" borderColor="gray.200">
-        <VStack spacing={4} align="stretch">
-          <HStack>
-            <Box w={8} h={8} bg="green.500" borderRadius="md" display="flex" alignItems="center" justifyContent="center">
-              <Text color="white" fontWeight="bold">⚡</Text>
-            </Box>
-            <Heading size="md" color="gray.800">Quick Policy Requests</Heading>
-          </HStack>
-          
-          <Text fontSize="sm" color="gray.600">
-            Common policy changes that can be requested instantly:
-          </Text>
-          
-          <VStack spacing={3} align="stretch">
-            <Button
-              colorScheme="blue"
-              variant="outline"
-              onClick={() => handleQuickRequest("Increase daily withdrawal to $15,000")}
-              isLoading={isSubmitting}
-              loadingText="Submitting..."
-            >
-              Increase Daily Withdrawal to $15,000
-            </Button>
-            
-            <Button
-              colorScheme="blue"
-              variant="outline"
-              onClick={() => handleQuickRequest("Enable overdraft protection up to $500")}
-              isLoading={isSubmitting}
-              loadingText="Submitting..."
-            >
-              Enable Overdraft Protection ($500)
-            </Button>
-            
-            <Button
-              colorScheme="blue"
-              variant="outline"
-              onClick={() => handleQuickRequest("Increase max deposit to $5,000")}
-              isLoading={isSubmitting}
-              loadingText="Submitting..."
-            >
-              Increase Max Deposit to $5,000
-            </Button>
-            
-            <Button
-              colorScheme="blue"
-              variant="outline"
-              onClick={() => handleQuickRequest("Increase max withdrawal to $2,500")}
-              isLoading={isSubmitting}
-              loadingText="Submitting..."
-            >
-              Increase Max Withdrawal to $2,500
-            </Button>
-          </VStack>
-        </VStack>
-      </Box>
+          <VStack spacing={4} align="stretch">
+            <form onSubmit={handleSubmit}>
+              <VStack spacing={4} align="stretch">
+                <Box>
+                  <Text fontSize="sm" fontWeight="medium" color="gray.300" mb={1}>
+                    Maximum Deposit Amount
+                  </Text>
+                  <HundredDollarInput
+                    value={formData.maxDeposit}
+                    onChange={handleChange}
+                    placeholder="Maximum Deposit"
+                    name="maxDeposit"
+                    min={100}
+                    max={50000}
+                  />
+                </Box>
 
-      {/* Custom Policy Request */}
-      <Box p={6} bg="white" borderRadius="md" shadow="sm" border="1px" borderColor="gray.200">
-        <VStack spacing={4} align="stretch">
-          <HStack>
-            <Box w={8} h={8} bg="purple.500" borderRadius="md" display="flex" alignItems="center" justifyContent="center">
-              <Text color="white" fontWeight="bold">✏️</Text>
-            </Box>
-            <Heading size="md" color="gray.800">Custom Policy Request</Heading>
-          </HStack>
-          
-          <Text fontSize="sm" color="gray.600">
-            Need a specific policy change? Submit a custom request with justification:
-          </Text>
-          
-          <VStack spacing={3} align="stretch">
-            <Box>
-              <Text fontSize="sm" fontWeight="medium" color="gray.600" mb={1}>
-                Policy Change Request
-              </Text>
-              <Input
-                placeholder="e.g., Increase daily withdrawal limit to $25,000"
-                value={customRequest}
-                onChange={(e) => setCustomRequest(e.target.value)}
-                size="lg"
-              />
-            </Box>
-            
-            <Box>
-              <Text fontSize="sm" fontWeight="medium" color="gray.600" mb={1}>
-                Justification (Optional)
-              </Text>
-              <Textarea
-                placeholder="Explain why you need this policy change..."
-                value={justification}
-                onChange={(e) => setJustification(e.target.value)}
-                rows={3}
-              />
-            </Box>
-            
-            <Button
-              colorScheme="purple"
-              size="lg"
-              onClick={handleCustomRequest}
-              isLoading={isSubmitting}
-              loadingText="Submitting Request..."
-              isDisabled={!customRequest.trim()}
-            >
-              Submit Custom Request
-            </Button>
-          </VStack>
-        </VStack>
-      </Box>
+                <Box>
+                  <Text fontSize="sm" fontWeight="medium" color="gray.300" mb={1}>
+                    Maximum Withdrawal Amount
+                  </Text>
+                  <HundredDollarInput
+                    value={formData.maxWithdrawal}
+                    onChange={handleChange}
+                    placeholder="Maximum Withdrawal"
+                    name="maxWithdrawal"
+                    min={100}
+                    max={50000}
+                  />
+                </Box>
 
-      {/* Request History */}
-      <Box p={6} bg="white" borderRadius="md" shadow="sm" border="1px" borderColor="gray.200">
-        <VStack spacing={4} align="stretch">
-          <HStack>
-            <Box w={8} h={8} bg="gray.500" borderRadius="md" display="flex" alignItems="center" justifyContent="center">
-              <Text color="white" fontWeight="bold">📜</Text>
-            </Box>
-            <Heading size="md" color="gray.800">Request History</Heading>
-          </HStack>
-          
-          <VStack spacing={3} align="stretch">
-            {requestHistory.map((request) => (
-              <Box key={request.id} p={4} bg="gray.50" borderRadius="md" border="1px" borderColor="gray.200">
-                <HStack justify="space-between" mb={2}>
-                  <Text fontWeight="medium" flex="1">{request.request}</Text>
-                  <Badge colorScheme={getStatusColor(request.status)}>
-                    {request.status}
-                  </Badge>
-                </HStack>
-                <Text fontSize="sm" color="gray.600">
-                  Submitted: {request.date}
-                </Text>
-              </Box>
-            ))}
+                <Box>
+                  <Text fontSize="sm" fontWeight="medium" color="gray.300" mb={1}>
+                    Daily Withdrawal Limit
+                  </Text>
+                  <HundredDollarInput
+                    value={formData.dailyWithdrawalLimit}
+                    onChange={handleChange}
+                    placeholder="Daily Withdrawal Limit"
+                    name="dailyWithdrawalLimit"
+                    min={100}
+                    max={100000}
+                  />
+                </Box>
+
+                <Box>
+                  <Text fontSize="sm" fontWeight="medium" color="gray.300" mb={1}>
+                    Overdraft Limit
+                  </Text>
+                  <HundredDollarInput
+                    value={formData.overdraftLimit}
+                    onChange={handleChange}
+                    placeholder="Overdraft Limit"
+                    name="overdraftLimit"
+                    min={100}
+                    max={10000}
+                  />
+                </Box>
+
+                <Box>
+                  <Text fontSize="sm" fontWeight="medium" color="gray.300" mb={1}>
+                    Justification
+                  </Text>
+                  <Textarea
+                    name="justification"
+                    value={formData.justification}
+                    onChange={handleChange}
+                    placeholder="Explain why you need these policy changes..."
+                    rows={4}
+                    size="lg"
+                    bg="rgba(255,255,255,0.06)"
+                    border="1px solid rgba(255,255,255,0.08)"
+                    color="white"
+                    _placeholder={{ color: "gray.500" }}
+                    _focus={{ borderColor: "rgba(56,189,248,0.4)", boxShadow: "0 0 0 1px rgba(56,189,248,0.4)" }}
+                  />
+                </Box>
+
+                <Button
+                  type="submit"
+                  bgGradient="linear(135deg, #0284c7, #38bdf8)"
+                  size="lg"
+                  isDisabled={!formData.justification.trim()}
+                  _hover={{ bgGradient: "linear(135deg, #38bdf8, #0284c7)" }}
+                >
+                  Submit Policy Request
+                </Button>
+              </VStack>
+            </form>
           </VStack>
         </VStack>
       </Box>

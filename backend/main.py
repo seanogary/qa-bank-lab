@@ -18,23 +18,26 @@ class WithdrawRequest(BaseModel):
     amount: int
 
 class TransferRequest(BaseModel):
-    from_account_id: str
-    target_account_id: str
+    from_username: str
+    target_username: str
     amount: int
+
+class UsernameLookupRequest(BaseModel):
+    username: str
+
+class UsernameSearchRequest(BaseModel):
+    search_term: str
 
 app = FastAPI()
 
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173"],  # React dev servers
+    allow_origins=["http://localhost:3000", "http://localhost:5173", "http://localhost:5174"],  # React dev servers
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-global_ledger = models.Ledger()
-global_accounts = {}
 
 # account creation, query, and deletion
 @app.post("/accounts")
@@ -67,6 +70,36 @@ async def delete_account(id: str):
 async def get_all_accounts():
     accounts = db.get_all_accounts()
     return accounts 
+
+# username lookup (backend only)
+@app.post("/user/lookup")
+async def lookup_account_by_username(req: UsernameLookupRequest):
+    """Get account ID by username (for backend use only)"""
+    account_id = db.get_account_id_by_username(req.username)
+    if account_id:
+        return {
+            "username": req.username,
+            "account_ID": account_id,
+            "found": True
+        }
+    else:
+        return {
+            "username": req.username,
+            "account_ID": None,
+            "found": False,
+            "message": "Username not found"
+        }
+
+# username search (for frontend autocomplete)
+@app.post("/user/search")
+async def search_usernames(req: UsernameSearchRequest):
+    """Search for usernames matching the search term (partial matching)"""
+    usernames = db.search_usernames(req.search_term)
+    return {
+        "search_term": req.search_term,
+        "matches": usernames,
+        "count": len(usernames)
+    }
 
 # transactions
 @app.post("/account/deposit")
@@ -125,8 +158,28 @@ async def make_withdrawal(req: WithdrawRequest):
 
 @app.post("/accounts/transfer")
 async def make_transfer(req: TransferRequest):
-    to_account = db.get_account(req.target_account_id)
-    from_account = db.get_account(req.from_account_id)
+    # Look up account IDs by username
+    from_account_id = db.get_account_id_by_username(req.from_username)
+    to_account_id = db.get_account_id_by_username(req.target_username)
+    
+    # Validate that both usernames exist
+    if not from_account_id:
+        return {
+            "error": "Source username not found",
+            "username": req.from_username,
+            "success": False
+        }
+    
+    if not to_account_id:
+        return {
+            "error": "Target username not found", 
+            "username": req.target_username,
+            "success": False
+        }
+    
+    # Get account details by account ID
+    to_account = db.get_account(to_account_id)
+    from_account = db.get_account(from_account_id)
 
     to_account_obj = models.Account(
         to_account["name"],
@@ -171,3 +224,149 @@ async def make_transfer(req: TransferRequest):
 async def get_ledger(id: str):
     ledger = db.get_ledger(id) 
     return ledger
+
+from typing import Optional
+
+# Policy Request Model
+class PolicyRequest(BaseModel):
+    user_id: str
+    max_deposit: Optional[int] = None
+    max_withdrawal: Optional[int] = None
+    daily_withdrawal_limit: Optional[int] = None
+    overdraft_limit: Optional[int] = None
+    justification: str
+
+# Policy Request Endpoint
+@app.post("/policy-requests")
+async def create_policy_request(policy_request: PolicyRequest):
+    from datetime import datetime
+    
+    # Create PolicyRequest object using the constructor from models
+    request_obj = models.PolicyRequest(
+        user_id=policy_request.user_id,
+        policy_request={
+            'max_deposit': policy_request.max_deposit,
+            'max_withdrawal': policy_request.max_withdrawal,
+            'daily_withdrawal_limit': policy_request.daily_withdrawal_limit,
+            'overdraft_limit': policy_request.overdraft_limit,
+            'justification': policy_request.justification
+        },
+        created_at=datetime.now(),
+        updated_at=datetime.now()
+    )
+    
+    # Insert into database
+    db.insert_policy_request(request_obj)
+    
+    return {
+        "request_id": str(request_obj.request_id),
+        "status": request_obj.status.value,
+        "message": "Policy request created successfully"
+    }
+
+# Get Policy Requests Endpoint
+@app.get("/policy-requests")
+async def get_policy_requests(user_id: str = None):
+    """Get all policy requests or filter by user_id"""
+    requests = db.get_policy_requests(user_id)
+    return requests
+
+# Admin-specific endpoints
+@app.get("/admin/policy-requests")
+async def get_admin_policy_requests():
+    """Get all policy requests for admin view"""
+    requests = db.get_policy_requests()
+    return requests
+
+# Initialize hardcoded admin user and sample policy requests
+@app.on_event("startup")
+async def startup_event():
+    """Initialize admin user and sample data on startup"""
+    import uuid
+    from datetime import datetime
+    from enum import Enum
+    
+    # Admin access is now handled separately - no admin account needed
+    print("Admin access available via dedicated admin panel")
+    
+    # Create sample policy requests
+    sample_requests = [
+        {
+            "request_id": str(uuid.uuid4()),
+            "user_id": "user_001",
+            "status": "pending",
+            "policy_request": {
+                "max_deposit": 10000,
+                "max_withdrawal": 5000,
+                "daily_withdrawal_limit": 2000,
+                "overdraft_limit": 1000,
+                "justification": "Need higher limits for business transactions"
+            },
+            "created_at": datetime.now(),
+            "updated_at": datetime.now()
+        },
+        {
+            "request_id": str(uuid.uuid4()),
+            "user_id": "user_002", 
+            "status": "approved",
+            "policy_request": {
+                "max_deposit": 5000,
+                "max_withdrawal": 2000,
+                "daily_withdrawal_limit": 1000,
+                "overdraft_limit": 500,
+                "justification": "Standard business account limits"
+            },
+            "created_at": datetime.now(),
+            "updated_at": datetime.now()
+        },
+        {
+            "request_id": str(uuid.uuid4()),
+            "user_id": "user_003",
+            "status": "rejected",
+            "policy_request": {
+                "max_deposit": 50000,
+                "max_withdrawal": 25000,
+                "daily_withdrawal_limit": 10000,
+                "overdraft_limit": 5000,
+                "justification": "Request for premium account limits"
+            },
+            "created_at": datetime.now(),
+            "updated_at": datetime.now()
+        },
+        {
+            "request_id": str(uuid.uuid4()),
+            "user_id": "user_004",
+            "status": "pending",
+            "policy_request": {
+                "max_deposit": 7500,
+                "max_withdrawal": 3500,
+                "daily_withdrawal_limit": 1500,
+                "overdraft_limit": 750,
+                "justification": "Small business owner needs moderate limits"
+            },
+            "created_at": datetime.now(),
+            "updated_at": datetime.now()
+        }
+    ]
+    
+    # Insert sample policy requests
+    for request_data in sample_requests:
+        try:
+            class MockPolicyRequest:
+                def __init__(self, data):
+                    self.request_id = data["request_id"]
+                    self.user_id = data["user_id"]
+                    self.status = data["status"]
+                    self.policy_request = data["policy_request"]
+                    self.created_at = data["created_at"]
+                    self.updated_at = data["updated_at"]
+            
+            mock_request = MockPolicyRequest(request_data)
+            db.insert_policy_request(mock_request)
+            print(f"Sample policy request created for user {request_data['user_id']}")
+        except Exception as e:
+            print(f"Policy request already exists or error: {e}")
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

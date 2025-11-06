@@ -8,6 +8,7 @@ import pytest
 from datetime import datetime
 import sys
 import os
+import uuid
 
 # Add parent directory to path to import models
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -71,3 +72,16 @@ def populated_ledger(fixed_seed):
     for tx in txs:
         ledger.add_transaction(self, tx)
     return ledger
+
+test_cases = []
+for i in range(100):
+    test_cases.append((f"test_user_{i}", i*10))
+
+@pytest.mark.parametrize("user_name, initial_balance", test_cases)
+# TEST: validating account creation logic 
+def test_account(user_name, initial_balance):
+    # create account object
+    new_account = Account(user_name, initial_balance)
+    # validate name and balance
+    assert new_account.balance == initial_balance and new_account.name == user_name and isinstance(new_account.policy, Policy) and isinstance(new_account.account_ID, uuid.UUID)
+

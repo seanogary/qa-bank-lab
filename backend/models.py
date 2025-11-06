@@ -105,7 +105,9 @@ class Transaction:
         counterparty=counterparty
 
 class Account:
-    def __init__(self, name, balance, account_ID=None):
+    def __init__(self, name, balance, account_ID=None, override=False):
+        if (balance <= 0 and not override):
+            raise ValueError("balance must be positive")
         self.name = name
         self.balance = balance
         self.account_ID = account_ID or uuid.uuid4()

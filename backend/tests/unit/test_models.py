@@ -75,7 +75,7 @@ def populated_ledger(fixed_seed):
 
 test_cases = []
 for i in range(100):
-    test_cases.append((f"test_user_{i}", i*10))
+    test_cases.append((f"test_user_{i}", (i + 1)*10))
 
 @pytest.mark.parametrize("user_name, initial_balance", test_cases)
 # TEST: validating account creation logic 
@@ -84,4 +84,10 @@ def test_account(user_name, initial_balance):
     new_account = Account(user_name, initial_balance)
     # validate name and balance
     assert new_account.balance == initial_balance and new_account.name == user_name and isinstance(new_account.policy, Policy) and isinstance(new_account.account_ID, uuid.UUID)
+
+
+def test_account_negative_initial_balance():
+    # create account object with negative initial balance
+    with pytest.raises(ValueError):
+        Account("test_user_with_neg_balance", -1000)
 

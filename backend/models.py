@@ -140,6 +140,8 @@ class Account:
     
     # deposit money into account
     def deposit(self, amount):
+        if (amount < 0):
+            raise ValueError("deposit must be positive")
         if (self.policy.validate_deposit(amount)):
             new_balance = self.balance + amount
             status = StatusType.SUCCESS

@@ -176,5 +176,29 @@ class TestAccount:
         # verify that status is successful 
         correct_status = tx.status == StatusType.SUCCESS
         
-        assert is_UUID and correct_amount and correct_tx_type and is_datetime and correct_balance and correct_status    
+        assert is_UUID and correct_amount and correct_tx_type and is_datetime and correct_balance and correct_status
+
+class TestPolicy:
+    """ 
+    Test suite for the Policy class.
+    """
+    @pytest.mark.xfail
+    def test_policy():
+        pass
+
+class TestLedger:
+    """
+    Test suite for the Ledger class
+    """
+    @pytest.mark.xfail
+    def test_ledger():
+        pass
+
+class TestTransaction:
+    """
+    Test suite for the Transaction class
+    """
+    @pytest.mark.xfail
+    def test_transaction():
+        pass
 

@@ -138,8 +138,7 @@ class TestAccount:
         starting_balance = test_account.balance
         max_withdrawal = test_account.policy.maxWithdrawal
         test_account.withdraw(max_withdrawal + 1)
-        assert starting_balance == test_account.balance
-    
+        assert starting_balance == test_account.balance    
     
     def test_overdraft_more_than_limit(self, test_account):
         starting_balance = test_account.balance
@@ -157,7 +156,7 @@ class TestAccount:
         test_account.withdraw(starting_balance)
         test_account.withdraw(test_account.policy.overdraftLimit)
         assert test_account.balance == - test_account.policy.overdraftLimit
-    
+ 
     def test_deposit_adds_to_ledger(self, test_account):
         starting_balance = test_account.balance
         test_account.deposit(50)
@@ -177,7 +176,7 @@ class TestAccount:
         correct_status = tx.status == StatusType.SUCCESS
         
         assert is_UUID and correct_amount and correct_tx_type and is_datetime and correct_balance and correct_status
-
+        
 class TestPolicy:
     """ 
     Test suite for the Policy class.

@@ -2,8 +2,9 @@ from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, 
 import hashlib
 from enum import Enum
 from datetime import datetime
+import os
 
-engine = create_engine('sqlite:///mydatabase.sqlite', echo=True)
+engine = create_engine(os.getenv('DATABASE_URL', 'sqlite:///mydatabase.sqlite'), echo=True)
 
 meta = MetaData()
 

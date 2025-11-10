@@ -77,12 +77,6 @@ class TestAccountDatabaseOperations:
     
     def test_get_nonexistent_account(self):
         response = db.get_account(str(uuid.uuid4()))
-        assert response is None
-    
-    def delete_nonexistent_account(self):
-        response = db.delete_account(str(uuid.uuid4()))
-        assert response is None
+        assert response is None    
 
-class TestErrorHandling:
-    """ Testing edge cases for proper error handling """
 

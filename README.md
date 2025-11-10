@@ -21,9 +21,8 @@ qa-bank-lab/
 │       ├── unit/              # Unit tests - business logic validation
 │       │   ├── test_models.py
 │       │   └── transaction_factory.py
-│       ├── integration/       # Integration tests - DB layer & API+DB
-│       │   └── test_db.py
-│       └── e2e/               # End-to-end tests (backend API flows)
+│       └── integration/       # Integration tests - API+DB flows (backend end-to-end)
+│           └── test_db.py
 │
 ├── frontend/
 │   └── qa-bank-lab/
@@ -39,12 +38,11 @@ qa-bank-lab/
 
 **Backend Testing** (`backend/tests/`)
 - **Unit Tests** (`unit/`): Test business logic in isolation (models, policies, validation)
-- **Integration Tests** (`integration/`): Test database layer with real SQLite database
-- **E2E Tests** (`e2e/`): Test complete API workflows
+- **Integration Tests** (`integration/`): Test API + Database flows - full backend stack (API → Models → Database)
 
 **Frontend Testing** (`frontend/qa-bank-lab/tests/`)
-- **Playwright Tests**: End-to-end browser testing covering full user workflows
-- Tests frontend React components integrated with backend API
+- **Playwright E2E Tests**: End-to-end browser testing covering full user workflows
+- Tests complete application stack (Frontend + Backend + Database) through browser interactions
 
 ## Video Demonstration
 

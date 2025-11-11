@@ -1,23 +1,24 @@
 # QA Bank Lab [DRAFT - UNDER DEVELOPMENT]
 
 ## Table of Contents
-[Description](#description) \
-[Project Structure](#project-structure) \
-[Testing Architecture](#testing-architecture) \
-[Video Demo](#video-demo) \
-[Takeaways](#takeaways) \
-[Current Development](#current-developments)\
-[Future Improvements](#future-improvements)\
-[How to Use](#how-to-use)
-- [Installing](#installing) 
+- [Description](#description) 
+- [Project Structure](#project-structure) 
+- [Testing Architecture](#testing-architecture) 
+- [Video Demo](#video-demo) 
+- [Takeaways](#takeaways) 
+- [Current Development](#current-developments)
+- [Future Improvements](#future-improvements)
 - [How to Use](#how-to-use)
 
-[License](#license) 
+    - [Installing](#installing) 
+    - [How to Use](#how-to-use)
+
+- [License](#license) 
+
+## Description
 
 This project is meant to demonstrate knowledge of testing with pytest and playwright. In addition, it demonstrates knowledge of full-stack development in React and Python, Rest API design, and
 the ability to design solutions to realistic business problems with software. 
-
-## Description
 
 QA Bank Lab is a full-stack toy banking application. It supports account creation, simple
 transactions within and between accounts, as well as administrator accounts and dashboards. This

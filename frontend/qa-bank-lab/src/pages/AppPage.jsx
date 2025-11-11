@@ -117,14 +117,14 @@ function AppPage() {
               <Heading size="md" color="gray.800" className="brand-type">Bank of Quality</Heading>
             </HStack>
             <HStack spacing={2}>
-              <Button 
+              {/* <Button 
                 onClick={() => navigate('/admin')} 
                 variant="outline"
                 size="sm"
                 colorScheme="red"
               >
                 Admin Panel
-              </Button>
+              </Button> */}
               <Button 
                 onClick={handleLogout} 
                 variant="outline" 

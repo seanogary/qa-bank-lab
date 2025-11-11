@@ -94,7 +94,6 @@ function Admin() {
         shadow="2xl" 
         borderBottom="1px" 
         borderColor="gray.200"
-        transform="rotate(-0.5deg)"
         position="relative"
         _before={{
           content: '""',
@@ -189,9 +188,7 @@ function Admin() {
                   borderRadius="xl" 
                   shadow="lg" 
                   p={6}
-                  transform={`rotate(${index % 2 === 0 ? '0.5deg' : '-0.5deg'})`}
                   _hover={{
-                    transform: `rotate(${index % 2 === 0 ? '0.5deg' : '-0.5deg'}) translateY(-2px)`,
                     shadow: "2xl"
                   }}
                   transition="all 0.2s ease"

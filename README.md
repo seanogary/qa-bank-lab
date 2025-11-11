@@ -88,7 +88,11 @@ Takeaway ideas (notes / draft):
 - finishing writing tests in playwright
 
 ## Future Improvements
-- switch to a model in which transactions are generated, validated, and executed, in that order, rather than a model which treats transactions as a record of less transparent execution logic.
+- switch to a model in which transactions are generated, validated, and executed, in that order, rather than a model which treats transactions as a record of less transparent execution logic. (high priority, high interest)
+- address security concerns in a real banking context to make more realistic (medium priority, high interest)
+- consider how to integrate with real payment systems, ACH, etc. How does the banking system and ACH network actually work? (low priority, high interest)
+- use phone number, user name, or email to make payments between accounts (as in Zelle) instead of the naked user id (high priority, low interest).
+
 
 ## How to Use
 

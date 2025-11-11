@@ -246,19 +246,19 @@ function Actions({ account, onTransactionSuccess }) {
         </Box>
       )}
       {/* Deposit Form */}
-      <Box p={6} bg="rgba(16,16,16,0.62)" borderRadius="xl" boxShadow="0 18px 32px rgba(0,0,0,0.35)" border="1px solid rgba(255,255,255,0.08)" backdropFilter="blur(8px)">
-  // NOTE: Use consistent styling and spacing for form sections. Chakra UI's props make this easy.
+      <Box p={6} bg="white" borderRadius="xl" boxShadow="sm" border="1px solid" borderColor="gray.200">
+
         <VStack spacing={4} align="stretch">
           <HStack>
             <Box w={8} h={8} bg="green.500" borderRadius="md" display="flex" alignItems="center" justifyContent="center">
               <Text color="white" fontWeight="bold">+</Text>
             </Box>
-            <Heading size="md" color="white" className="brand-type">Deposit Money</Heading>
+            <Heading size="md" color="gray.800" className="brand-type">Deposit Money</Heading>
           </HStack>
           
           <VStack spacing={3} align="stretch">
             <Box>
-              <Text fontSize="sm" fontWeight="medium" color="gray.300" mb={1}>
+              <Text fontSize="sm" fontWeight="medium" color="gray.600" mb={1}>
                 Amount to Deposit
               </Text>
               <Input
@@ -268,11 +268,12 @@ function Actions({ account, onTransactionSuccess }) {
                 value={depositAmount}
                 onChange={(e) => setDepositAmount(e.target.value)}
                 size="lg"
-                bg="rgba(255,255,255,0.06)"
-                border="1px solid rgba(255,255,255,0.08)"
-                color="white"
-                _placeholder={{ color: "gray.500" }}
-                _focus={{ borderColor: "rgba(34,197,94,0.4)", boxShadow: "0 0 0 1px rgba(34,197,94,0.4)" }}
+                bg="white"
+                border="1px solid"
+                borderColor="gray.300"
+                color="gray.800"
+                _placeholder={{ color: "gray.400" }}
+                _focus={{ borderColor: "green.400", boxShadow: "0 0 0 1px rgba(34,197,94,0.4)" }}
               />
             </Box>
             
@@ -284,13 +285,13 @@ function Actions({ account, onTransactionSuccess }) {
   // NOTE: The "Snail" feature is a playful take on peer-to-peer payments. Use clear branding and instructions for new features.
               // NOTE: Autocomplete suggestions improve usability. For production, fetch suggestions from a backend service.
               // NOTE: Always disable send buttons when required fields are missing or invalid.
-              bgGradient="linear(135deg, #16a34a, #22c55e)"
+              colorScheme="green"
               size="lg"
               onClick={handleDeposit}
               isLoading={depositLoading}
               loadingText="Processing..."
               isDisabled={!depositAmount || depositAmount <= 0}
-              _hover={{ bgGradient: "linear(135deg, #22c55e, #16a34a)" }}
+              _hover={{}}
             >
               Deposit Money
             </Button>
@@ -299,18 +300,18 @@ function Actions({ account, onTransactionSuccess }) {
       </Box>
 
       {/* Withdrawal Form */}
-      <Box p={6} bg="rgba(16,16,16,0.62)" borderRadius="xl" boxShadow="0 18px 32px rgba(0,0,0,0.35)" border="1px solid rgba(255,255,255,0.08)" backdropFilter="blur(8px)">
+      <Box p={6} bg="white" borderRadius="xl" boxShadow="sm" border="1px solid" borderColor="gray.200">
         <VStack spacing={4} align="stretch">
           <HStack>
             <Box w={8} h={8} bg="red.500" borderRadius="md" display="flex" alignItems="center" justifyContent="center">
               <Text color="white" fontWeight="bold">-</Text>
             </Box>
-            <Heading size="md" color="white" className="brand-type">Withdraw Money</Heading>
+            <Heading size="md" color="gray.800" className="brand-type">Withdraw Money</Heading>
           </HStack>
           
           <VStack spacing={3} align="stretch">
             <Box>
-              <Text fontSize="sm" fontWeight="medium" color="gray.300" mb={1}>
+              <Text fontSize="sm" fontWeight="medium" color="gray.600" mb={1}>
                 Amount to Withdraw
               </Text>
               <Input
@@ -319,22 +320,23 @@ function Actions({ account, onTransactionSuccess }) {
                 value={withdrawAmount}
                 onChange={(e) => setWithdrawAmount(e.target.value)}
                 size="lg"
-                bg="rgba(255,255,255,0.06)"
-                border="1px solid rgba(255,255,255,0.08)"
-                color="white"
-                _placeholder={{ color: "gray.500" }}
-                _focus={{ borderColor: "rgba(248,113,113,0.4)", boxShadow: "0 0 0 1px rgba(248,113,113,0.4)" }}
+                bg="white"
+                border="1px solid"
+                borderColor="gray.300"
+                color="gray.800"
+                _placeholder={{ color: "gray.400" }}
+                _focus={{ borderColor: "red.400", boxShadow: "0 0 0 1px rgba(248,113,113,0.4)" }}
               />
             </Box>
             
             <Button
-              bgGradient="linear(135deg, #dc2626, #f87171)"
+              colorScheme="red"
               size="lg"
               onClick={handleWithdraw}
               isLoading={withdrawLoading}
               loadingText="Processing..."
               isDisabled={!withdrawAmount || withdrawAmount <= 0}
-              _hover={{ bgGradient: "linear(135deg, #f87171, #dc2626)" }}
+              _hover={{}}
             >
               Withdraw Money
             </Button>
@@ -343,19 +345,19 @@ function Actions({ account, onTransactionSuccess }) {
       </Box>
 
       {/* Snail (Send Money) Form */}
-      <Box p={6} bg="rgba(16,16,16,0.62)" borderRadius="xl" boxShadow="0 18px 32px rgba(0,0,0,0.35)" border="1px solid rgba(255,255,255,0.08)" backdropFilter="blur(8px)">
+      <Box p={6} bg="white" borderRadius="xl" boxShadow="sm" border="1px solid" borderColor="gray.200">
         <VStack spacing={4} align="stretch">
           <HStack>
-            <Box w={8} h={8} bgGradient="linear(135deg, #0284c7, #38bdf8)" borderRadius="md" display="flex" alignItems="center" justifyContent="center" boxShadow="0 6px 16px rgba(56,189,248,0.35)">
+            <Box w={8} h={8} bg="blue.500" borderRadius="md" display="flex" alignItems="center" justifyContent="center" boxShadow="sm">
               <Text color="white" fontWeight="bold">🐌</Text>
             </Box>
-            <Heading size="md" color="white" className="brand-type">Snail</Heading>
-            <Text fontSize="sm" color="gray.300" fontStyle="italic">Send money fast, like a snail</Text>
+            <Heading size="md" color="gray.800" className="brand-type">Snail</Heading>
+            <Text fontSize="sm" color="gray.600" fontStyle="italic">Send money fast, like a snail</Text>
           </HStack>
           
           <VStack spacing={3} align="stretch">
             <Box position="relative">
-              <Text fontSize="sm" fontWeight="medium" color="gray.300" mb={1}>
+              <Text fontSize="sm" fontWeight="medium" color="gray.600" mb={1}>
                 Recipient (Username or Phone)
               </Text>
               <Input
@@ -364,11 +366,12 @@ function Actions({ account, onTransactionSuccess }) {
                 value={snailRecipient}
                 onChange={(e) => handleUsernameChange(e.target.value)}
                 size="lg"
-                bg="rgba(255,255,255,0.06)"
-                border="1px solid rgba(255,255,255,0.08)"
-                color="white"
-                _placeholder={{ color: "gray.500" }}
-                _focus={{ borderColor: "rgba(56,189,248,0.4)", boxShadow: "0 0 0 1px rgba(56,189,248,0.4)" }}
+                bg="white"
+                border="1px solid"
+                borderColor="gray.300"
+                color="gray.800"
+                _placeholder={{ color: "gray.400" }}
+                _focus={{ borderColor: "blue.400", boxShadow: "0 0 0 1px rgba(56,189,248,0.4)" }}
               />
               {/* Username Suggestions - Floating */}
               {usernameSuggestions.length > 0 && (
@@ -378,16 +381,17 @@ function Actions({ account, onTransactionSuccess }) {
                   left="0"
                   right="0"
                   mt={1}
-                  bg="rgba(11,11,11,0.92)"
+                  bg="white"
                   borderRadius="md"
-                  border="1px solid rgba(255,255,255,0.08)"
+                  border="1px solid"
+                  borderColor="gray.200"
                   p={2}
                   zIndex={10}
-                  boxShadow="0 14px 28px rgba(0,0,0,0.35)"
+                  boxShadow="md"
                   maxHeight="300px"
                   overflowY="hidden"
                 >
-                  <Text fontSize="xs" fontWeight="medium" color="gray.400" mb={1}>
+                  <Text fontSize="xs" fontWeight="medium" color="gray.600" mb={1}>
                     Suggestions:
                   </Text>
                   <VStack spacing={1} align="stretch">
@@ -395,17 +399,18 @@ function Actions({ account, onTransactionSuccess }) {
                       <Box 
                         key={index}
                         p={2}
-                        bg="rgba(255,255,255,0.05)"
+                        bg="gray.50"
                         borderRadius="sm"
-                        border="1px solid transparent"
-                        _hover={{ bg: "rgba(56,189,248,0.12)", borderColor: "rgba(56,189,248,0.35)" }}
+                        border="1px solid"
+                        borderColor="transparent"
+                        _hover={{ bg: "blue.50", borderColor: "blue.200" }}
                         cursor="pointer"
                         onClick={() => {
                           setSnailRecipient(username)
                           setUsernameSuggestions([])
                         }}
                       >
-                        <Text fontSize="sm" color="white">{username}</Text>
+                        <Text fontSize="sm" color="gray.800">{username}</Text>
                       </Box>
                     ))}
                   </VStack>
@@ -414,7 +419,7 @@ function Actions({ account, onTransactionSuccess }) {
             </Box>
             
             <Box>
-              <Text fontSize="sm" fontWeight="medium" color="gray.300" mb={1}>
+              <Text fontSize="sm" fontWeight="medium" color="gray.600" mb={1}>
                 Amount to Send
               </Text>
               <Input
@@ -423,30 +428,31 @@ function Actions({ account, onTransactionSuccess }) {
                 value={snailAmount}
                 onChange={(e) => setSnailAmount(e.target.value)}
                 size="lg"
-                bg="rgba(255,255,255,0.06)"
-                border="1px solid rgba(255,255,255,0.08)"
-                color="white"
-                _placeholder={{ color: "gray.500" }}
-                _focus={{ borderColor: "rgba(56,189,248,0.4)", boxShadow: "0 0 0 1px rgba(56,189,248,0.4)" }}
+                bg="white"
+                border="1px solid"
+                borderColor="gray.300"
+                color="gray.800"
+                _placeholder={{ color: "gray.400" }}
+                _focus={{ borderColor: "blue.400", boxShadow: "0 0 0 1px rgba(56,189,248,0.4)" }}
               />
             </Box>
             
             <Button
-              bgGradient="linear(135deg, #0284c7, #38bdf8)"
+              colorScheme="blue"
               size="lg"
               onClick={handleSnail}
               isLoading={snailLoading}
               loadingText="Sending via Snail..."
               isDisabled={!snailRecipient || !snailAmount || snailAmount <= 0}
-              _hover={{ bgGradient: "linear(135deg, #38bdf8, #0284c7)" }}
+              _hover={{}}
             >
               Send via Snail 🐌
             </Button>
           </VStack>
           
-          <Box p={3} bg="rgba(56,189,248,0.12)" borderRadius="md" border="1px solid rgba(56,189,248,0.3)">
-  // NOTE: Use info boxes to educate users about new features. Keep copy concise and helpful.
-            <Text fontSize="xs" color="blue.100">
+          <Box p={3} bg="blue.50" borderRadius="md" border="1px solid" borderColor="blue.200">
+            {/* NOTE: Use info boxes to educate users about new features. Keep copy concise and helpful. */}
+            <Text fontSize="xs" color="blue.700">
               💡 Snail works like Zelle - send money to friends using their username or phone number. 
               Transfers are instant and secure!
             </Text>

@@ -22,7 +22,7 @@ function HundredDollarInput({ value, onChange, placeholder, name, min = 0, max =
         backgroundColor: 'rgba(255,255,255,0.06)',
         border: '1px solid rgba(255,255,255,0.08)',
         borderRadius: '8px',
-        color: 'white',
+        color: 'black',
         fontSize: '16px',
         fontFamily: 'Inter, system-ui, sans-serif',
         cursor: 'pointer'
@@ -122,20 +122,20 @@ function ManageAccount() {
   return (
     <VStack spacing={6} align="stretch">
       {/* Policy Request Form */}
-      <Box p={6} bg="rgba(16,16,16,0.62)" borderRadius="xl" boxShadow="0 18px 32px rgba(0,0,0,0.35)" border="1px solid rgba(255,255,255,0.08)" backdropFilter="blur(8px)">
+      <Box p={6} bg="white" borderRadius="xl" boxShadow="sm" border="1px solid" borderColor="gray.200">
         <VStack spacing={4} align="stretch">
           <HStack>
             <Box w={8} h={8} bg="blue.500" borderRadius="md" display="flex" alignItems="center" justifyContent="center">
               <Text color="white" fontWeight="bold">📋</Text>
             </Box>
-            <Heading size="md" color="white" className="brand-type">Policy Request Form</Heading>
+            <Heading size="md" color="gray.800" className="brand-type">Policy Request Form</Heading>
           </HStack>
 
           <VStack spacing={4} align="stretch">
             <form onSubmit={handleSubmit}>
               <VStack spacing={4} align="stretch">
                 <Box>
-                  <Text fontSize="sm" fontWeight="medium" color="gray.300" mb={1}>
+                  <Text fontSize="sm" fontWeight="medium" color="gray.600" mb={1}>
                     Maximum Deposit Amount
                   </Text>
                   <HundredDollarInput
@@ -149,7 +149,7 @@ function ManageAccount() {
                 </Box>
 
                 <Box>
-                  <Text fontSize="sm" fontWeight="medium" color="gray.300" mb={1}>
+                  <Text fontSize="sm" fontWeight="medium" color="gray.600" mb={1}>
                     Maximum Withdrawal Amount
                   </Text>
                   <HundredDollarInput
@@ -163,7 +163,7 @@ function ManageAccount() {
                 </Box>
 
                 <Box>
-                  <Text fontSize="sm" fontWeight="medium" color="gray.300" mb={1}>
+                  <Text fontSize="sm" fontWeight="medium" color="gray.600" mb={1}>
                     Daily Withdrawal Limit
                   </Text>
                   <HundredDollarInput
@@ -177,7 +177,7 @@ function ManageAccount() {
                 </Box>
 
                 <Box>
-                  <Text fontSize="sm" fontWeight="medium" color="gray.300" mb={1}>
+                  <Text fontSize="sm" fontWeight="medium" color="gray.600" mb={1}>
                     Overdraft Limit
                   </Text>
                   <HundredDollarInput
@@ -191,7 +191,7 @@ function ManageAccount() {
                 </Box>
 
                 <Box>
-                  <Text fontSize="sm" fontWeight="medium" color="gray.300" mb={1}>
+                  <Text fontSize="sm" fontWeight="medium" color="gray.600" mb={1}>
                     Justification
                   </Text>
                   <Textarea
@@ -201,20 +201,21 @@ function ManageAccount() {
                     placeholder="Explain why you need these policy changes..."
                     rows={4}
                     size="lg"
-                    bg="rgba(255,255,255,0.06)"
-                    border="1px solid rgba(255,255,255,0.08)"
-                    color="white"
-                    _placeholder={{ color: "gray.500" }}
-                    _focus={{ borderColor: "rgba(56,189,248,0.4)", boxShadow: "0 0 0 1px rgba(56,189,248,0.4)" }}
+                    bg="white"
+                    border="1px solid"
+                    borderColor="gray.300"
+                    color="gray.800"
+                    _placeholder={{ color: "gray.400", borderColor: "gray.300" }}
+                    _focus={{ borderColor: "blue.400", boxShadow: "0 0 0 1px rgba(56,189,248,0.4)" }}
                   />
                 </Box>
 
                 <Button
                   type="submit"
-                  bgGradient="linear(135deg, #0284c7, #38bdf8)"
+                  colorScheme="blue"
                   size="lg"
                   isDisabled={!formData.justification.trim()}
-                  _hover={{ bgGradient: "linear(135deg, #38bdf8, #0284c7)" }}
+                  _hover={{}}
                 >
                   Submit Policy Request
                 </Button>

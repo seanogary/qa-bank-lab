@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { Box, VStack, HStack, Text, Button, Heading, Container, Badge, Spinner } from "@chakra-ui/react"
-import { api } from "../services/api"
 
 function AdminPage({ onLogout }) {
   const [policyRequests, setPolicyRequests] = useState([])

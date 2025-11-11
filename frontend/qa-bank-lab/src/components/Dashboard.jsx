@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { Box, Text, VStack, HStack, Button } from "@chakra-ui/react"
 import TransactionsModal from "./TransactionsModal"
-import { api } from "../services/api"
 
 function Dashboard({ account, transactions, allTransactions }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -16,37 +15,35 @@ function Dashboard({ account, transactions, allTransactions }) {
     <>
       <VStack spacing={6} align="stretch">
         {/* Account Overview */}
-        <Box p={6} bg="rgba(20,20,20,0.85)" borderRadius="xl" boxShadow="0 8px 22px rgba(0,0,0,0.35)" border="1px solid rgba(255,255,255,0.06)">
-          <Text fontSize="lg" fontWeight="bold" mb={4} color="white" className="brand-type">Account Overview</Text>
+        <Box p={6} bg="white" borderRadius="xl" boxShadow="sm" border="1px solid" borderColor="gray.200">
+          <Text fontSize="lg" fontWeight="bold" mb={4} color="gray.800" className="brand-type">Account Overview</Text>
           <VStack spacing={3} align="stretch">
             <HStack justify="space-between">
-              <Text fontWeight="medium" color="gray.300">Account ID:</Text>
-              <Text fontFamily="mono" color="gray.200">{account.account_ID}</Text>
+              <Text fontWeight="medium" color="gray.600">Account ID:</Text>
+              <Text fontFamily="mono" color="gray.700">{account.account_ID}</Text>
             </HStack>
             <HStack justify="space-between">
-              <Text fontWeight="medium" color="gray.300">Account Name:</Text>
-              <Text color="white">{account.name}</Text>
+              <Text fontWeight="medium" color="gray.600">Account Name:</Text>
+              <Text color="gray.800">{account.name}</Text>
             </HStack>
-            <Box h="1px" bg="gray.700" />
+            <Box h="1px" bg="gray.200" />
             <HStack justify="space-between">
-              <Text fontWeight="bold" fontSize="lg" color="white">Current Balance:</Text>
-              <Text fontWeight="bold" fontSize="lg" color="green.300">
-                ${account.balance.toLocaleString()}
+              <Text fontWeight="bold" fontSize="lg" color="gray.800">Current Balance:</Text>
+              <Text fontWeight="bold" fontSize="lg" color="green.600">
+                ${account.balance?.toLocaleString()}
               </Text>
             </HStack>
           </VStack>
         </Box>
 
         {/* Recent Transactions */}
-        <Box p={6} bg="rgba(20,20,20,0.85)" borderRadius="xl" boxShadow="0 8px 22px rgba(0,0,0,0.35)" border="1px solid rgba(255,255,255,0.06)">
+        <Box p={6} bg="white" borderRadius="xl" boxShadow="sm" border="1px solid" borderColor="gray.200">
           <HStack justify="space-between" mb={4}>
-            <Text fontSize="lg" fontWeight="bold" color="white" className="brand-type">Recent Transactions</Text>
+            <Text fontSize="lg" fontWeight="bold" color="gray.800" className="brand-type">Recent Transactions</Text>
             <Button 
               size="sm" 
-              variant="outline" 
-              color="gray.200"
-              borderColor="rgba(255,255,255,0.18)"
-              _hover={{ bg: "rgba(255,255,255,0.06)", borderColor: "rgba(255,255,255,0.28)" }}
+              variant="outline"
+              colorScheme="blue"
               onClick={openModal}
             >
               See All Transactions
@@ -54,29 +51,29 @@ function Dashboard({ account, transactions, allTransactions }) {
           </HStack>
           <VStack spacing={3} align="stretch">
             {!hasTransactions ? (
-              <Box p={6} textAlign="center" bg="rgba(255,255,255,0.04)" borderRadius="md">
-                <Text color="gray.400">No transactions yet</Text>
+              <Box p={6} textAlign="center" bg="gray.50" borderRadius="md" border="1px solid" borderColor="gray.200">
+                <Text color="gray.600">No transactions yet</Text>
               </Box>
             ) : (
               transactions.map((tx) => (
-              <Box key={tx.tx_ID} p={3} bg="rgba(255,255,255,0.04)" borderRadius="md" border="1px solid rgba(255,255,255,0.06)">
+              <Box key={tx.tx_ID} p={3} bg="gray.50" borderRadius="md" border="1px solid" borderColor="gray.200">
                 <HStack justify="space-between">
                   <VStack align="start" spacing={1}>
-                    <Text fontWeight="medium" textTransform="capitalize" color="white">
+                    <Text fontWeight="medium" textTransform="capitalize" color="gray.800">
                       {tx.tx_type.toLowerCase()}
                     </Text>
-                    <Text fontSize="sm" color="gray.400">
+                    <Text fontSize="sm" color="gray.600">
                       {new Date(tx.timestamp).toLocaleDateString()}
                     </Text>
                   </VStack>
                   <VStack align="end" spacing={1}>
                     <Text 
                       fontWeight="bold" 
-                      color={tx.tx_type === "DEPOSIT" ? "green.300" : "red.400"}
+                      color={tx.tx_type === "DEPOSIT" ? "green.600" : "red.600"}
                     >
                       {tx.tx_type === "DEPOSIT" ? "+" : "-"}${tx.amount}
                     </Text>
-                    <Text fontSize="sm" color="gray.400" textTransform="capitalize">
+                    <Text fontSize="sm" color="gray.600" textTransform="capitalize">
                       {tx.status.toLowerCase()}
                     </Text>
                   </VStack>

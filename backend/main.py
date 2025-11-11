@@ -289,6 +289,14 @@ async def startup_event():
     # Admin access is now handled separately - no admin account needed
     print("Admin access available via dedicated admin panel")
     
+    # Seed one demo account if none exist
+    try:
+        if not db.get_all_accounts():
+            db.insert_account(models.Account("Demo User", 1000))
+            print("Seeded demo account: Demo User with $1000")
+    except Exception as e:
+        print(f"Account seeding skipped or failed: {e}")
+    
     # Create sample policy requests
     sample_requests = [
         {

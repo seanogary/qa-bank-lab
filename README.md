@@ -69,7 +69,7 @@ backend with fastAPI and SQLAlchemy. Once this was underway I decided to expand 
 project with React, using AI assitance (cursor) to accelerate front-end development but 
 with enough knowledge of React (conceptually: components, props, hooks) to audit as needed. 
 
-This expansion expansion turned the project into a full quality-assurance lab whose scope, behavior, 
+This expansion turned the project into a full quality-assurance lab whose scope, behavior, 
 and architecture I understand end-to-end, allowing me to practice thorough testing across the entire 
 stack. 
 
@@ -80,8 +80,7 @@ Takeaway ideas (notes / draft):
 - systems thinking (be more specific)
 - designing databases: how to link policies to inidividuals, global ledger vs user specific ledger, etc (still artifacts in model that contradict approach in database!) 
 - the benefit of transaction FIRST (I did not do this... see [future improvements](#future-improvements))
-
-
+- discuss the limits of AI assisted programming and the experience gained refactoring / testing AI generated React
 
 ## Current Developments
 

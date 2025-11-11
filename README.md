@@ -1,28 +1,18 @@
 # QA Bank Lab [DRAFT - UNDER DEVELOPMENT]
 
 ## Table of Contents
-
-[Description](#description)
-
-[Project Structure](#project-structure)
-
-[Testing Architecture](#testing-architecture)
-
-[Video Demo](#video-demo)
-
-[Takeaways](#takeaways)
-
-[Current Development](#current-developments)
-
-[Future Improvements](#future-improvements)
-
+[Description](#description) \
+[Project Structure](#project-structure) \
+[Testing Architecture](#testing-architecture) \
+[Video Demo](#video-demo) \
+[Takeaways](#takeaways) \
+[Current Development](#current-developments)\
+[Future Improvements](#future-improvements)\
 [How to Use](#how-to-use)
-
-- [Installing](#installing)
-
+- [Installing](#installing) 
 - [How to Use](#how-to-use)
 
-[License](#license)
+[License](#license) 
 
 This project is meant to demonstrate knowledge of testing with pytest and playwright. In addition, it demonstrates knowledge of full-stack development in React and Python, Rest API design, and
 the ability to design solutions to realistic business problems with software. 
